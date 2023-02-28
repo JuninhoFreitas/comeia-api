@@ -3,17 +3,15 @@ import Task from '../typeorm/entities/Tasks';
 import { TasksRepository } from '../typeorm/repositories/TasksRepository';
 
 interface IRequest {
-  done?: boolean;
+  query: {done?: boolean;}
+  user_id: string;
 }
 
 class ListTasksService {
-	public async execute({ done }: IRequest): Promise<Task[]> {
+	public async execute({ query, user_id }: IRequest): Promise<Task[]> {
 		const tasksRepository = getCustomRepository(TasksRepository);
-		const query = {
-			done
-		};
 
-		const tasks = await tasksRepository.listTasks({ query });
+		const tasks = await tasksRepository.listTasks({ query, user_id});
 
 		return tasks;
 	}

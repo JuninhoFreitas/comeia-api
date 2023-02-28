@@ -9,15 +9,16 @@ interface IRequest {
   description?: string;
   done?: boolean;
   date?: Date;
+  user: string;
 }
 
 class UpdateTaskService {
-	public async execute({ task_id, done, description, date }: IRequest): Promise<Task | undefined> {
+	public async execute({ task_id, done, description, date, user }: IRequest): Promise<Task | undefined> {
 		const tasksRepository = getCustomRepository(TasksRepository);
 		const entity = { done, description, date };
 		const filteredEntity = _.omitBy(entity, _.isUndefined);
 
-		const taskFound = await tasksRepository.findOne({ task_id });
+		const [taskFound] = await tasksRepository.find({where:{ task_id, user }});
 
 		if(!taskFound){
 			throw new AppError('Task não encontrada', 404);

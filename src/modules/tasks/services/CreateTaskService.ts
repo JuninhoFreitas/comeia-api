@@ -1,3 +1,4 @@
+import { UsersRepository } from '@modules/users/typeorm/repositories/UsersRepository';
 import AppError from '@shared/errors/AppError';
 import { getCustomRepository } from 'typeorm';
 import Task from '../typeorm/entities/Tasks';
@@ -7,14 +8,17 @@ interface ICreateTask {
   date: string;
   description: string;
   done: boolean;
+  user_id: string;
 }
 
 class CreateTaskService {
-	public async execute({ date, description, done	}: ICreateTask ): Promise<Task | undefined> {
+	public async execute({ date, description, done, user_id }: ICreateTask ): Promise<Task | undefined> {
 		const tasksRepository = getCustomRepository(TasksRepository);
+		const usersRepository = getCustomRepository(UsersRepository);
+		const user = await usersRepository.findOne({user_id});
 
-		const newTask = tasksRepository.create({ date, description, done });
-
+		const newTask = tasksRepository.create({ date, description, done, user });
+		console.log(newTask);
 		const { generatedMaps: [createdTask] } = await tasksRepository.insert(newTask);
 
 		const insertedTask = await tasksRepository.findOne({

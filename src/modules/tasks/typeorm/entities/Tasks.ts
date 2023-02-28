@@ -1,4 +1,5 @@
-import { Column, DeleteDateColumn, Entity, PrimaryColumn } from 'typeorm';
+import User from '../../../users/typeorm/entities/Users';
+import { Column, DeleteDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
 @Entity('tasks')
 class Task {
@@ -16,6 +17,10 @@ class Task {
 
   @DeleteDateColumn()
   deleted_at?: Date;
+
+  @ManyToOne(() => User, user => user.tasks)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }
 
 export default Task;

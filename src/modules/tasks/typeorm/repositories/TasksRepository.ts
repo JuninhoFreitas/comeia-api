@@ -9,6 +9,7 @@ interface ICreateTask {
 
 interface IQuery {
 	query: object;
+	user_id: string;
 }
 
 @EntityRepository(Tasks)
@@ -24,11 +25,11 @@ export class TasksRepository extends Repository<Tasks> {
 		return task;
 	}
 
-	public async listTasks({query}: IQuery): Promise<Tasks | any> {
+	public async listTasks({query, user_id}: IQuery): Promise<Tasks | any> {
 		const filteredQuery = _.omitBy(query, _.isUndefined);
-
+		
 		const task = await getRepository(Tasks)
-			.createQueryBuilder().select('*').where({ ...filteredQuery, deleted_at: null }).execute();
+			.createQueryBuilder().select('*').where({ ...filteredQuery, user: user_id, deleted_at: null }).execute();
 
 		return task;
 	}
