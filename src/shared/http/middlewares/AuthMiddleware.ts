@@ -6,10 +6,6 @@ interface UserPayload {
   id: string;
   email: string;
 }
-
-
-
-
 interface ReqModified extends Request{
     user?: UserPayload;
 }
