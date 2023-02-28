@@ -1,13 +1,18 @@
 import { Request, Response } from 'express';
 import CreateTaskService from '../services/CreateTaskService';
+import ListTasksService from '../services/ListTasksService';
 
 export default class TasksController {
-	public async list(_request: Request, response: Response): Promise<Response> {
+	public async list(request: Request, response: Response): Promise<Response> {
+		const { query } = request;
+
+		const listTasksService = new ListTasksService();
+
+		const tasks = await listTasksService.execute(query);
+
 		return response.json({
 			success: true,
-			data: {
-				res: 'OK'
-			},
+			data: tasks
 		});
 	}
 	public async create(request: Request, response: Response): Promise<Response> {
@@ -19,9 +24,7 @@ export default class TasksController {
 
 		return response.json({
 			success: true,
-			data: {
-				...createdTask
-			},
+			data: createdTask,
 		});
 	}
 }
