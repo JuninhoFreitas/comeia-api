@@ -10,6 +10,12 @@ consumes:
   - "application/json"
 produces:
   - "application/json"
+securityDefinitions:
+  BearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: Token de autorização Bearer
 
 paths:
   /tasks:
@@ -18,34 +24,30 @@ paths:
         - "Tasks"
       summary: "Listar tarefas"
       description: "Retorna uma lista de todas as tarefas cadastradas."
+      security:
+        - BearerAuth: []
       parameters:
         - name: done
           in: query
           description: "Status de execução atual"
           type: boolean
-        - name: description
-          in: query
-          description: "Descrição"
-          type: string
-        - name: date
-          in: query
-          description: "Data da tarefa"
-          type: string
+          enum: [true, false]
       responses:
         200:
           description: "Operação bem sucedida"
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/Task"
+              $ref: "#/definitions/ListOfTasks"
         500:
           description: "Erro interno do servidor"
-
     post:
       tags:
         - "Tasks"
       summary: "Criar tarefa"
       description: "Cria uma nova tarefa."
+      security:
+        - BearerAuth: []
       parameters:
         - name: "task"
           in: "body"
@@ -57,18 +59,19 @@ paths:
         201:
           description: "Tarefa criada com sucesso"
           schema:
-            $ref: "#/definitions/Task"
+            $ref: "#/definitions/TaskCreated"
         400:
           description: "Requisição inválida"
         500:
           description: "Erro interno do servidor"
-
   /tasks/{task_id}:
     delete:
       tags:
         - "Tasks"
       summary: "Excluir tarefa"
       description: "Exclui uma tarefa a partir do seu ID."
+      security:
+        - BearerAuth: []
       parameters:
         - name: "task_id"
           in: "path"
@@ -88,6 +91,8 @@ paths:
         - "Tasks"
       summary: "Atualizar tarefa"
       description: "Atualiza uma tarefa a partir do seu ID."
+      security:
+        - BearerAuth: []
       parameters:
         - name: "task_id"
           in: "path"
@@ -104,32 +109,81 @@ paths:
         200:
           description: "Tarefa atualizada com sucesso"
           schema:
-            $ref: "#/definitions/Task"
+            $ref: "#/definitions/TaskCreated"
         404:
           description: "Tarefa não encontrada"
         500:
           description: "Erro interno do servidor"
 
+  /users/register:
+    post:
+      tags:
+        - "Users"
+      summary: "Registro de usuário"
+      description: "Realiza a criação do usuário"
+      parameters:
+        - name: "task"
+          in: "body"
+          description: "Objeto com as credenciais do usuário"
+          required: true
+          schema:
+            $ref: "#/definitions/NewUser"
+      responses:
+        201:
+          description: "Usuário criada com sucesso"
+          schema:
+            $ref: "#/definitions/UserCreated"
+        400:
+          description: "Requisição inválida"
+        500:
+          description: "Erro interno do servidor"
+  /users/login:
+    post:
+      tags:
+        - "Users"
+      summary: "Login de usuário"
+      description: "Realiza a autenticação do usuário"
+      parameters:
+        - name: "task"
+          in: "body"
+          description: "Objeto com as credenciais do usuário"
+          required: true
+          schema:
+            $ref: "#/definitions/NewUser"
+      responses:
+        201:
+          description: "Usuário autenticado com sucesso"
+          schema:
+            $ref: "#/definitions/UserAuthenticated"
+        400:
+          description: "Requisição inválida"
+        500:
+          description: "Erro interno do servidor"        
+
 definitions:
-  Task:
+  TaskCreated:
     type: "object"
     properties:
-      task_id:
+      success:
         type: "string"
-        example: "179aa216-6e88-43e8-89e7-09ed5ae54b67"
-      date:
-        type: "string"
-        format: "date-time"
-      description:
-        type: "string"
-      done:
-        type: "boolean"
-    required:
-      - id
-      - date
-      - description
-      - executed
-
+        example: "success"
+      data:
+        type: "object"
+        properties:
+          task_id:
+            type: "string"
+            example: "179aa216-6e88-43e8-89e7-09ed5ae54b67"
+          date:
+            type: "string"
+            format: "date-time"
+          description:
+            type: "string"
+            example: "Criar testes de integração e unitários"
+          done:
+            type: "boolean"
+          user_id:
+            type: "string"
+            example: "179aa216-6e88-43e8-89e7-09ed5ae54b67"
   NewTask:
     type: "object"
     properties:
@@ -140,11 +194,69 @@ definitions:
         type: "string"
       done:
         type: "boolean"
+    required: [date, description, done]
+  NewUser:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+        example: "jondoe@email.com"
+      password:
+        example: "StrongPassword123"
+        type: "string"
+        minimum: 6
+    required: [email, password]
+  UserCreated:
+    type: "object"
+    properties:
+      success:
+        type: "string"
+        example: "success"
+      data:
+        type: "object"
+        properties:
+          user_id:
+            type: "string"
+            example: "179aa216-6e88-43e8-89e7-09ed5ae54b67"
     required:
-      [date,
-      description,
-      done]
-     
+      - user_id
+  UserAuthenticated:
+    type: "object"
+    properties:
+      success:
+        type: "string"
+        example: "success"
+      data:
+        type: "string"
+        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVhYTVlNGE1LWU0N2MtNDkyYi04ZmUyLTA1NzJlODc5MzdmYiIsImlhdCI6MTY3NzYwNzMxMCwiZXhwIjoxNjc3NjkzNzEwfQ.7QYDL2vB4D6O0tOeGSto-yEezDWf4WDWTS0D3IjShaM"
+        description: "Token Bearer para ser usado no campo Authentication"
+    required:
+      - user_id    
+  ListOfTasks:
+    type: "object"
+    properties:
+      success:
+        type: "string"
+        example: "success"
+      data:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            task_id:
+              type: "string"
+              example: "179aa216-6e88-43e8-89e7-09ed5ae54b67"
+            date:
+              type: "string"
+              format: "date-time"
+            description:
+              type: "string"
+              example: "Criar testes de integração e unitários"
+            done:
+              type: "boolean"
+            user_id:
+              type: "string"
+              example: "179aa216-6e88-43e8-89e7-09ed5ae54b67"
   UpdateTask:
     type: "object"
     properties:

@@ -18,7 +18,6 @@ class CreateTaskService {
 		const user = await usersRepository.findOne({user_id});
 
 		const newTask = tasksRepository.create({ date, description, done, user });
-		console.log(newTask);
 		const { generatedMaps: [createdTask] } = await tasksRepository.insert(newTask);
 
 		const insertedTask = await tasksRepository.findOne({
