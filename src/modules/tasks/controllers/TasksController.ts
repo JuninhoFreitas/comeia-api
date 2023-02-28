@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import CreateTaskService from '../services/CreateTaskService';
 import DeleteTaskService from '../services/DeleteTaskService';
 import ListTasksService from '../services/ListTasksService';
+import UpdateTaskService from '../services/UpdateTaskService';
 
 export default class TasksController {
 	public async list(request: Request, response: Response): Promise<Response> {
@@ -37,6 +38,19 @@ export default class TasksController {
 
 		return response.status(204).json({
 			success: true
+		});
+	}
+	public async update(request: Request, response: Response): Promise<Response> {
+		const { task_id } = request.params;
+		const { done, description, date } = request.body;
+
+		const updateTaskService = new UpdateTaskService();
+
+		const updatedTask = await updateTaskService.execute({ task_id, done, description, date });
+
+		return response.status(200).json({
+			success: true,
+			data: updatedTask,
 		});
 	}
 }
