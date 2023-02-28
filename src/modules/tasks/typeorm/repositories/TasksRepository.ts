@@ -28,7 +28,7 @@ export class TasksRepository extends Repository<Tasks> {
 		const filteredQuery = _.omitBy(query, _.isUndefined);
 
 		const task = await getRepository(Tasks)
-			.createQueryBuilder().select('*').where(filteredQuery).execute();
+			.createQueryBuilder().select('*').where({ ...filteredQuery, deleted_at: null }).execute();
 
 		return task;
 	}

@@ -25,6 +25,11 @@ export class migrations1677543221626 implements MigrationInterface {
 						name: 'done',
 						type: 'boolean',
 					},
+					{
+						name: 'deleted_at',
+						type: 'timestamp',
+						isNullable: true,
+					}
 				],
 			}),
 		);

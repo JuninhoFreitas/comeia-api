@@ -1,8 +1,8 @@
-import { Column, DeleteDateColumn, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('tasks')
 class Task {
-  @PrimaryColumn({ generated: 'uuid' })
+  @PrimaryColumn()
   task_id: string;
 
   @Column()
@@ -13,9 +13,6 @@ class Task {
 
   @Column()
   done: boolean;
-
-  @DeleteDateColumn()
-  deleted_at?: Date;
 }
 
 export default Task;

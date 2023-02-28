@@ -12,7 +12,12 @@ const tasksSchema = {
 			date: Joi.date().required(),
 			description: Joi.string().required(),
 		},
-	})
+	}),
+	deleteTask: celebrate({
+		[Segments.PARAMS]: {
+			task_id: Joi.string().uuid().required()
+		},
+	}),
 };
 
 
