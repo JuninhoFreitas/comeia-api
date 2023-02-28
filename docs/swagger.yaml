@@ -1,0 +1,157 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "Lista de Tarefas API"
+  description: "API para gerenciar lista de tarefas"
+basePath: "/"
+schemes:
+  - "http"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+
+paths:
+  /tasks:
+    get:
+      tags:
+        - "Tasks"
+      summary: "Listar tarefas"
+      description: "Retorna uma lista de todas as tarefas cadastradas."
+      parameters:
+        - name: done
+          in: query
+          description: "Status de execução atual"
+          type: boolean
+        - name: description
+          in: query
+          description: "Descrição"
+          type: string
+        - name: date
+          in: query
+          description: "Data da tarefa"
+          type: string
+      responses:
+        200:
+          description: "Operação bem sucedida"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Task"
+        500:
+          description: "Erro interno do servidor"
+
+    post:
+      tags:
+        - "Tasks"
+      summary: "Criar tarefa"
+      description: "Cria uma nova tarefa."
+      parameters:
+        - name: "task"
+          in: "body"
+          description: "Objeto Task a ser criado"
+          required: true
+          schema:
+            $ref: "#/definitions/NewTask"
+      responses:
+        201:
+          description: "Tarefa criada com sucesso"
+          schema:
+            $ref: "#/definitions/Task"
+        400:
+          description: "Requisição inválida"
+        500:
+          description: "Erro interno do servidor"
+
+  /tasks/{task_id}:
+    delete:
+      tags:
+        - "Tasks"
+      summary: "Excluir tarefa"
+      description: "Exclui uma tarefa a partir do seu ID."
+      parameters:
+        - name: "task_id"
+          in: "path"
+          description: "ID da tarefa a ser excluída."
+          required: true
+          type: "integer"
+      responses:
+        204:
+          description: "Tarefa excluída com sucesso"
+        404:
+          description: "Tarefa não encontrada"
+        500:
+          description: "Erro interno do servidor"
+
+    patch:
+      tags:
+        - "Tasks"
+      summary: "Atualizar tarefa"
+      description: "Atualiza uma tarefa a partir do seu ID."
+      parameters:
+        - name: "task_id"
+          in: "path"
+          description: "ID da tarefa a ser atualizada."
+          required: true
+          type: "integer"
+        - name: "task"
+          in: "body"
+          description: "Objeto Task a ser atualizado"
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateTask"
+      responses:
+        200:
+          description: "Tarefa atualizada com sucesso"
+          schema:
+            $ref: "#/definitions/Task"
+        404:
+          description: "Tarefa não encontrada"
+        500:
+          description: "Erro interno do servidor"
+
+definitions:
+  Task:
+    type: "object"
+    properties:
+      task_id:
+        type: "string"
+        example: "179aa216-6e88-43e8-89e7-09ed5ae54b67"
+      date:
+        type: "string"
+        format: "date-time"
+      description:
+        type: "string"
+      done:
+        type: "boolean"
+    required:
+      - id
+      - date
+      - description
+      - executed
+
+  NewTask:
+    type: "object"
+    properties:
+      date:
+        type: "string"
+        format: "date-time"
+      description:
+        type: "string"
+      done:
+        type: "boolean"
+    required:
+      [date,
+      description,
+      done]
+     
+  UpdateTask:
+    type: "object"
+    properties:
+      date:
+        type: "string"
+        format: "date-time"
+      description:
+        type: "string"
+      done:
+        type: "boolean"
