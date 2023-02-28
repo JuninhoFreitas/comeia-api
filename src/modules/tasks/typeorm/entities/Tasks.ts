@@ -2,7 +2,7 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('tasks')
 class Task {
-  @PrimaryColumn()
+  @PrimaryColumn({ generated: 'uuid' })
   task_id: string;
 
   @Column()
@@ -12,7 +12,7 @@ class Task {
   description: string;
 
   @Column()
-  done: Boolean;
+  done: boolean;
 }
 
 export default Task;
