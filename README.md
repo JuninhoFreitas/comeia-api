@@ -84,7 +84,7 @@ ___
 ### Postman & Swagger
 O diretório `docs/` contém a collection+environment para o Postman
 e a documentação do projeto no Swagger.
-
+Para acesso as rotas de Task, o usuário deve estar autenticado.
 
 
 
